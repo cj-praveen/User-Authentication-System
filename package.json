@@ -1,0 +1,8 @@
+{
+    "name": "user-authentication-system",
+    "version": "1.0",
+    "private": "true",
+    "dependencies": {
+        "tailwindcss": "^3.4.1"
+    }
+}
