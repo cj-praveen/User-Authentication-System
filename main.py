@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, Response
-from lib.Auth import Auth
+from scripts.Auth import Auth
 import qrcode, io
 
 
@@ -25,31 +25,29 @@ def sign_up() -> str:
 
         if not result["code"]:
             params["success"] = True
-
-        if params["success"]:
-            params["auth_uri"],params["secret_key"] = result['content']
+            params["auth_uri"] = result["auth_uri"]
 
     return render_template("serve.html", **params)
 
 
 @app.route("/sign-in", methods=["GET", "POST"])
 def sign_in() -> str:
-    params = dict(route=request.path, message="", success=False, client_id="", require_otp=False)
+    params = dict(route=request.path, message="", success=False, userId="", require_otp=False)
 
     if request.method == "POST":
 
         if "otp" in request.form.keys():
-            client_id, otp = request.form.values()
-            result = inst.authorization(client_id, int(otp))
+            userId, otp = request.form.values()
+            result = inst.authorization(userId, otp)
             params["success"] = True if not result['code'] else False
 
         else:
             username, password = request.form.values()
             result = inst.authentication(username, password)
 
-            if not result['code']:
+            if not result["code"]:
                 params["require_otp"] = True
-                params["client_id"] = result['content']
+                params["userId"] = result["userId"]
 
         params['message'] = result['message'] if result['code'] else ""
 
